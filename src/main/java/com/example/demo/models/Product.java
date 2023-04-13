@@ -6,11 +6,14 @@ public class Product {
 	private float price;
 	private String description;
 	private int quantity;
+	private static int counter = 1;
+	
 	public int getId() {
 		return id;
 	}
-	public void setId(int id) {
-		this.id = id;
+	public void setId() {
+		this.id = counter;
+		counter++;
 	}
 	public String getTitle() {
 		return title;
@@ -36,8 +39,8 @@ public class Product {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-	public Product(int id, String title, float price, String description, int quantity) {
-		this.id = id;
+	public Product(String title, float price, String description, int quantity) {
+		setId();
 		this.title = title;
 		this.price = price;
 		this.description = description;

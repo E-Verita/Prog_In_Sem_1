@@ -15,8 +15,8 @@ import com.example.demo.models.Product;
 @Controller
 public class FirstController {
 
-	private ArrayList<Product> allProducts = new ArrayList<>(Arrays.asList(new Product(1, "Ābols", 3.99f, "Sarkans", 3),
-			new Product(2, "Tomāts", 1.99f, "Dzeltens", 12), new Product(3, "Avokado", 0.99f, "Zaļš", 10)));
+	private ArrayList<Product> allProducts = new ArrayList<>(Arrays.asList(new Product("Ābols", 3.99f, "Sarkans", 3),
+			new Product("Tomāts", 1.99f, "Dzeltens", 12), new Product("Avokado", 0.99f, "Zaļš", 10)));
 
 	@GetMapping("/hello")
 	public String helloFuntion() {
@@ -35,7 +35,7 @@ public class FirstController {
 
 	@GetMapping("/product")
 	public String productFunction(Model model) {
-		Product prod = new Product(1, "Ābols", 3.99f, "Sarkans", 3);
+		Product prod = new Product("Ābols", 3.99f, "Sarkans", 3);
 		model.addAttribute("myProduct", prod);
 		return "product";
 	}
@@ -101,7 +101,8 @@ public class FirstController {
 	@PostMapping ("/insert")
 	public String insertProductPostFunc(Product product) { //saņemts aizpildīts (no form) produkts
 		//TODO: Var izveidot dažādas pārbaudes
-		allProducts.add(product);
+		Product prod = new Product(product.getTitle(), product.getPrice(), product.getDescription(), product.getQuantity());
+		allProducts.add(prod);
 		return "redirect:/allproducts";  //aiziet uz get mapping /allproducts
 	}
 }
