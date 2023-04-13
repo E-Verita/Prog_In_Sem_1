@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.models.Product;
@@ -48,9 +49,10 @@ public class FirstController {
 					return "product";
 				}
 			}
-		} return "error-page";
+		}
+		return "error-page";
 	}
-	
+
 	@GetMapping("/product/{title}")
 	public String productByParamFunction2(@PathVariable("title") String title, Model model) {
 		if (title != null) {
@@ -63,7 +65,43 @@ public class FirstController {
 		}
 		return "error-page";
 	}
-	
-	//TODO: kontrolieri, kas izfiltrē visus produktus, kuru cena ir zem 2 eiro
 
+	// kontrolieris, kas atgriezīs visus produktus
+	@GetMapping("/allproducts") // localhost:8080/allproducts
+	public String allProductsFunc(Model model) {
+		model.addAttribute("myAllProducts", allProducts);
+		return "all-products-page";
+	}
+
+	// TODO kontrolieri, kas izfiltrē visus produktus, kuru cena ir mazaka par
+	// padoto vērtību
+	@GetMapping("/allproducts/{price}")
+	public String allProductsByPrice(@PathVariable("price") float price, Model model) {
+		if (price > 0) {
+
+			ArrayList<Product> allProductsWithPriceLess = new ArrayList<>();
+			for (Product temp : allProducts) {
+				if (temp.getPrice() < price) {
+					allProductsWithPriceLess.add(temp);
+				}
+			}
+			model.addAttribute("myAllProducts", allProductsWithPriceLess);
+			return "all-products-page";
+
+		}
+
+		return "error-page";
+	}
+	
+	@GetMapping ("/insert")
+	public String insertProductFunc(Product product) { //padots tukšs produkts
+		return "insert-page";
+	}
+	
+	@PostMapping ("/insert")
+	public String insertProductPostFunc(Product product) { //saņemts aizpildīts (no form) produkts
+		//TODO: Var izveidot dažādas pārbaudes
+		allProducts.add(product);
+		return "redirect:/allproducts";  //aiziet uz get mapping /allproducts
+	}
 }

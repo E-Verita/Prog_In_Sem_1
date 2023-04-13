@@ -1,15 +1,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<body>
-	<table>
-		<tr th:each="prod : ${myAllProducts}">
-			<td th:each="${prod.setId}"></td>
-			<td th:each="${prod.getTitle}"></td>
-			<td th:each="${prod.getPrice}"></td>
-			<td th:each="${prod.getDescription}"></td>
-			<td th:each="${prod.getQuantity}"></td>
-		</tr>
-	</table>
-</body>
 
+<table>
+	<tr th:each="prod : ${myAllProducts}">
+		<td th:text="${prod.getId()}"></td>
+		<td th:text="${prod.getTitle()}"></td>
+		<td th:text="${prod.getPrice()}"></td>
+		<td th:text="${prod.getDescription()}"></td>
+		<td th:text="${prod.getQuantity()}"></td>
+	</tr>
+</table>
 </html>
