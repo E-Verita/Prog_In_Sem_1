@@ -87,22 +87,52 @@ public class FirstController {
 			}
 			model.addAttribute("myAllProducts", allProductsWithPriceLess);
 			return "all-products-page";
-
 		}
+		return "error-page";
+	}
 
+	@GetMapping("/insert")
+	public String insertProductFunc(Product product) { // padots tukšs produkts
+		return "insert-page";
+	}
+
+	@PostMapping("/insert")
+	public String insertProductPostFunc(Product product) { // saņemts aizpildīts (no form) produkts
+		// TODO: Var izveidot dažādas pārbaudes
+		Product prod = new Product(product.getTitle(), product.getPrice(), product.getDescription(),
+				product.getQuantity());
+		allProducts.add(prod);
+		return "redirect:/allproducts"; // aiziet uz get mapping /allproducts
+	}
+
+	@GetMapping("/update/{id}")
+	public String updateProductByIdGetFunc(@PathVariable("id") int id, Model model) {
+		for (Product temp : allProducts) {
+			if (temp.getId() == id) {
+				model.addAttribute("product", temp);
+				return "update-page";
+			}
+		}
 		return "error-page";
 	}
 	
-	@GetMapping ("/insert")
-	public String insertProductFunc(Product product) { //padots tukšs produkts
-		return "insert-page";
+	@PostMapping("/update/{id}")
+	public String updateProductByIdPostFunc(@PathVariable("id") int id, Product product) { //ienāķ redigētais produkts
+		for (Product temp : allProducts) {
+			if (temp.getId() == id) {
+				temp.setTitle(product.getTitle());
+				temp.setPrice(product.getPrice());
+				temp.setDescription(product.getDescription());
+				temp.setQuantity(product.getQuantity());
+
+				return "redirect:/product/" + temp.getTitle();
+			}
+		}
+		return "redirect:/error";
 	}
 	
-	@PostMapping ("/insert")
-	public String insertProductPostFunc(Product product) { //saņemts aizpildīts (no form) produkts
-		//TODO: Var izveidot dažādas pārbaudes
-		Product prod = new Product(product.getTitle(), product.getPrice(), product.getDescription(), product.getQuantity());
-		allProducts.add(prod);
-		return "redirect:/allproducts";  //aiziet uz get mapping /allproducts
+	@GetMapping("/error")
+	public String errorFunc() { // padots tukšs produkts
+		return "error-page";
 	}
 }
