@@ -115,9 +115,9 @@ public class FirstController {
 		}
 		return "error-page";
 	}
-	
+
 	@PostMapping("/update/{id}")
-	public String updateProductByIdPostFunc(@PathVariable("id") int id, Product product) { //ienāķ redigētais produkts
+	public String updateProductByIdPostFunc(@PathVariable("id") int id, Product product) { // ienāķ redigētais produkts
 		for (Product temp : allProducts) {
 			if (temp.getId() == id) {
 				temp.setTitle(product.getTitle());
@@ -130,9 +130,21 @@ public class FirstController {
 		}
 		return "redirect:/error";
 	}
-	
+
 	@GetMapping("/error")
 	public String errorFunc() { // padots tukšs produkts
+		return "error-page";
+	}
+
+	@GetMapping("/delete/{id}")
+	public String deleteProductById(@PathVariable("id") int id, Model model) { // padots tukšs produkts
+		for (Product temp : allProducts) {
+			if (temp.getId() == id) {
+				allProducts.remove(temp);
+				model.addAttribute("myAllProducts", allProducts);
+				return "all-products-page";
+			}
+		}
 		return "error-page";
 	}
 }
