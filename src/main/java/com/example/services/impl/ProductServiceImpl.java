@@ -12,7 +12,6 @@ public class ProductServiceImpl implements ICRUDProductService, IFilteringProduc
 	private ArrayList<Product> allProducts = new ArrayList<>(Arrays.asList(new Product("Ābols", 3.99f, "Sarkans", 3),
 			new Product("Tomāts", 1.99f, "Dzeltens", 12), new Product("Avokado", 0.99f, "Zaļš", 10)));
 
-	
 	@Override
 	public ArrayList<Product> retrieveAllProducts() {
 		return allProducts;
@@ -80,17 +79,17 @@ public class ProductServiceImpl implements ICRUDProductService, IFilteringProduc
 	@Override
 	public ArrayList<Product> filterByPriceLess(float price) {
 		if (price > 0) {
-
 			ArrayList<Product> allProductsWithPriceLess = new ArrayList<>();
 			for (Product temp : allProducts) {
 				if (temp.getPrice() < price) {
 					allProductsWithPriceLess.add(temp);
 				}
 			}
-		
-			return allProductsWithPriceLess;
-	}
-		return new ArrayList<Product>();
 
+			return allProductsWithPriceLess;
+		}
+		
+		return new ArrayList<Product>();
+	}
 
 }

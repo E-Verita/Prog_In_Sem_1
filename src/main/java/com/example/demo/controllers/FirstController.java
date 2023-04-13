@@ -11,20 +11,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.models.Product;
+import com.example.services.impl.ProductServiceImpl;
 
 @Controller
 public class FirstController {
-
-	private ArrayList<Product> allProducts = new ArrayList<>(Arrays.asList(new Product("Ābols", 3.99f, "Sarkans", 3),
-			new Product("Tomāts", 1.99f, "Dzeltens", 12), new Product("Avokado", 0.99f, "Zaļš", 10)));
+	ProductServiceImpl productServiceImpl;
 
 	@GetMapping("/hello")
 	public String helloFuntion() {
 		System.out.println("Mans pirmais kontrolieris STRĀDĀ!!!");
 		return "hello-page";
 	}
-
-	// TODO: uztaisīt jaunu kontroliera funkciju, kas prot nosūtīt ziņu uz font-end
 
 	@GetMapping("/msg")
 	public String msgFuntion(Model model) {
@@ -41,35 +38,31 @@ public class FirstController {
 	}
 
 	@GetMapping("/productOne")
-	public String productByParamFunction(@RequestParam("title") String title, Model model) {
-		if (title != null) {
-			for (Product temp : allProducts) {
-				if (temp.getTitle().equals(title)) {
-					model.addAttribute("myProduct", temp);
-					return "product";
-				}
-			}
+	public String productByParamFunction(@RequestParam("title") String title, Model model) throws Exception {
+		try {
+			model.addAttribute("myProduct", productServiceImpl.retrieveOneProductByTitle(title));
+			return "product";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error-page";
 		}
-		return "error-page";
 	}
 
 	@GetMapping("/product/{title}")
-	public String productByParamFunction2(@PathVariable("title") String title, Model model) {
-		if (title != null) {
-			for (Product temp : allProducts) {
-				if (temp.getTitle().equals(title)) {
-					model.addAttribute("myProduct", temp);
-					return "product";
-				}
-			}
+	public String productByParamFunction2(@PathVariable("title") String title, Model model) throws Exception {
+		try {
+			model.addAttribute("myProduct", productServiceImpl.retrieveOneProductByTitle(title));
+			return "product";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error-page";
 		}
-		return "error-page";
 	}
 
 	// kontrolieris, kas atgriezīs visus produktus
-	@GetMapping("/allproducts") // localhost:8080/allproducts
+	@GetMapping("/allproducts")
 	public String allProductsFunc(Model model) {
-		model.addAttribute("myAllProducts", allProducts);
+		model.addAttribute("myAllProducts", productServiceImpl.retrieveAllProducts());
 		return "all-products-page";
 	}
 
@@ -77,18 +70,13 @@ public class FirstController {
 	// padoto vērtību
 	@GetMapping("/allproducts/{price}")
 	public String allProductsByPrice(@PathVariable("price") float price, Model model) {
-		if (price > 0) {
-
-			ArrayList<Product> allProductsWithPriceLess = new ArrayList<>();
-			for (Product temp : allProducts) {
-				if (temp.getPrice() < price) {
-					allProductsWithPriceLess.add(temp);
-				}
-			}
-			model.addAttribute("myAllProducts", allProductsWithPriceLess);
+		try {
+			model.addAttribute("myAllProducts", productServiceImpl.filterByPriceLess(price));
 			return "all-products-page";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error-page";
 		}
-		return "error-page";
 	}
 
 	@GetMapping("/insert")
@@ -98,37 +86,32 @@ public class FirstController {
 
 	@PostMapping("/insert")
 	public String insertProductPostFunc(Product product) { // saņemts aizpildīts (no form) produkts
-		// TODO: Var izveidot dažādas pārbaudes
-		Product prod = new Product(product.getTitle(), product.getPrice(), product.getDescription(),
+		productServiceImpl.insertProductByParams(product.getTitle(), product.getPrice(), product.getDescription(),
 				product.getQuantity());
-		allProducts.add(prod);
 		return "redirect:/allproducts"; // aiziet uz get mapping /allproducts
 	}
 
 	@GetMapping("/update/{id}")
 	public String updateProductByIdGetFunc(@PathVariable("id") int id, Model model) {
-		for (Product temp : allProducts) {
-			if (temp.getId() == id) {
-				model.addAttribute("product", temp);
-				return "update-page";
-			}
+		try {
+			model.addAttribute("product", productServiceImpl.retrieveOneProductById(id));
+			return "update-page";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error-page";
 		}
-		return "error-page";
 	}
 
 	@PostMapping("/update/{id}")
 	public String updateProductByIdPostFunc(@PathVariable("id") int id, Product product) { // ienāķ redigētais produkts
-		for (Product temp : allProducts) {
-			if (temp.getId() == id) {
-				temp.setTitle(product.getTitle());
-				temp.setPrice(product.getPrice());
-				temp.setDescription(product.getDescription());
-				temp.setQuantity(product.getQuantity());
-
-				return "redirect:/product/" + temp.getTitle();
-			}
+		try {
+			productServiceImpl.updateProductByParams(id, product.getTitle(), product.getPrice(),
+					product.getDescription(), product.getQuantity());
+			return "redirect:/product/" + product.getTitle();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "redirect:/error";
 		}
-		return "redirect:/error";
 	}
 
 	@GetMapping("/error")
@@ -138,13 +121,13 @@ public class FirstController {
 
 	@GetMapping("/delete/{id}")
 	public String deleteProductById(@PathVariable("id") int id, Model model) { // padots tukšs produkts
-		for (Product temp : allProducts) {
-			if (temp.getId() == id) {
-				allProducts.remove(temp);
-				model.addAttribute("myAllProducts", allProducts);
-				return "all-products-page";
-			}
+		try {
+			productServiceImpl.deleteProductById(id);
+			model.addAttribute("myAllProducts", productServiceImpl.retrieveAllProducts());
+			return "all-products-page";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error-page";
 		}
-		return "error-page";
 	}
 }
